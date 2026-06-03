@@ -9,22 +9,22 @@
 /* Begin PBXBuildFile section */
 		17FEAF212FCE08AE00D0E562 /* ICS3UCulminatingApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17FEAF202FCE08AE00D0E562 /* ICS3UCulminatingApp.swift */; };
 		17FEAF232FCE08AE00D0E562 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 17FEAF222FCE08AE00D0E562 /* Assets.xcassets */; };
-		17FEAF262FCE08AE00D0E562 /* House.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17FEAF252FCE08AE00D0E562 /* House.swift */; };
-		17FEAF292FCE08AE00D0E562 /* HouseListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17FEAF282FCE08AE00D0E562 /* HouseListViewModel.swift */; };
-		17FEAF2C2FCE08AE00D0E562 /* HousesListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17FEAF2B2FCE08AE00D0E562 /* HousesListView.swift */; };
-		17FEAF2E2FCE08AE00D0E562 /* HouseItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17FEAF2D2FCE08AE00D0E562 /* HouseItemView.swift */; };
 		17FEAF302FCE08AF00D0E562 /* RELEASE.md in Resources */ = {isa = PBXBuildFile; fileRef = 17FEAF2F2FCE08AF00D0E562 /* RELEASE.md */; };
+		17FEAF352FD053F900D0E562 /* Suit.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17FEAF342FD053F800D0E562 /* Suit.swift */; };
+		17FEAF372FD053F900D0E562 /* Rank.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17FEAF362FD053F900D0E562 /* Rank.swift */; };
+		17FEAF392FD053F900D0E562 /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17FEAF382FD053F900D0E562 /* Card.swift */; };
+		17FEAF3B2FD053F900D0E562 /* RoundResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17FEAF3A2FD053F900D0E562 /* RoundResult.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		17FEAF1D2FCE08AE00D0E562 /* ICS3UCulminating.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ICS3UCulminating.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		17FEAF202FCE08AE00D0E562 /* ICS3UCulminatingApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ICS3UCulminatingApp.swift; sourceTree = "<group>"; };
 		17FEAF222FCE08AE00D0E562 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		17FEAF252FCE08AE00D0E562 /* House.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = House.swift; sourceTree = "<group>"; };
-		17FEAF282FCE08AE00D0E562 /* HouseListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseListViewModel.swift; sourceTree = "<group>"; };
-		17FEAF2B2FCE08AE00D0E562 /* HousesListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HousesListView.swift; sourceTree = "<group>"; };
-		17FEAF2D2FCE08AE00D0E562 /* HouseItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HouseItemView.swift; sourceTree = "<group>"; };
 		17FEAF2F2FCE08AF00D0E562 /* RELEASE.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = RELEASE.md; sourceTree = "<group>"; };
+		17FEAF342FD053F800D0E562 /* Suit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Suit.swift; sourceTree = "<group>"; };
+		17FEAF362FD053F900D0E562 /* Rank.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Rank.swift; sourceTree = "<group>"; };
+		17FEAF382FD053F900D0E562 /* Card.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Card.swift; sourceTree = "<group>"; };
+		17FEAF3A2FD053F900D0E562 /* RoundResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundResult.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -70,7 +70,10 @@
 		17FEAF242FCE08AE00D0E562 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				17FEAF252FCE08AE00D0E562 /* House.swift */,
+				17FEAF342FD053F800D0E562 /* Suit.swift */,
+				17FEAF362FD053F900D0E562 /* Rank.swift */,
+				17FEAF382FD053F900D0E562 /* Card.swift */,
+				17FEAF3A2FD053F900D0E562 /* RoundResult.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -78,7 +81,6 @@
 		17FEAF272FCE08AE00D0E562 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
-				17FEAF282FCE08AE00D0E562 /* HouseListViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -86,8 +88,6 @@
 		17FEAF2A2FCE08AE00D0E562 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				17FEAF2B2FCE08AE00D0E562 /* HousesListView.swift */,
-				17FEAF2D2FCE08AE00D0E562 /* HouseItemView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -165,11 +165,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				17FEAF2E2FCE08AE00D0E562 /* HouseItemView.swift in Sources */,
-				17FEAF262FCE08AE00D0E562 /* House.swift in Sources */,
-				17FEAF2C2FCE08AE00D0E562 /* HousesListView.swift in Sources */,
-				17FEAF292FCE08AE00D0E562 /* HouseListViewModel.swift in Sources */,
+				17FEAF352FD053F900D0E562 /* Suit.swift in Sources */,
+				17FEAF3B2FD053F900D0E562 /* RoundResult.swift in Sources */,
+				17FEAF372FD053F900D0E562 /* Rank.swift in Sources */,
 				17FEAF212FCE08AE00D0E562 /* ICS3UCulminatingApp.swift in Sources */,
+				17FEAF392FD053F900D0E562 /* Card.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
