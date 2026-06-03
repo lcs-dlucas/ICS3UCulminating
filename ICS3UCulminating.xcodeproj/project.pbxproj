@@ -15,6 +15,10 @@
 		17FEAF392FD053F900D0E562 /* Card.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17FEAF382FD053F900D0E562 /* Card.swift */; };
 		17FEAF3B2FD053F900D0E562 /* RoundResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17FEAF3A2FD053F900D0E562 /* RoundResult.swift */; };
 		17FEAF3D2FD05ECD00D0E562 /* GameViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17FEAF3C2FD05ECD00D0E562 /* GameViewModel.swift */; };
+		17FEAF3F2FD0653100D0E562 /* CardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17FEAF3E2FD0653100D0E562 /* CardView.swift */; };
+		17FEAF412FD0660F00D0E562 /* ScoreBoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17FEAF402FD0660F00D0E562 /* ScoreBoardView.swift */; };
+		17FEAF432FD0661300D0E562 /* ControlButtonsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17FEAF422FD0661300D0E562 /* ControlButtonsView.swift */; };
+		17FEAF452FD0662100D0E562 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17FEAF442FD0662100D0E562 /* GameView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,6 +31,10 @@
 		17FEAF382FD053F900D0E562 /* Card.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Card.swift; sourceTree = "<group>"; };
 		17FEAF3A2FD053F900D0E562 /* RoundResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoundResult.swift; sourceTree = "<group>"; };
 		17FEAF3C2FD05ECD00D0E562 /* GameViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameViewModel.swift; sourceTree = "<group>"; };
+		17FEAF3E2FD0653100D0E562 /* CardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CardView.swift; sourceTree = "<group>"; };
+		17FEAF402FD0660F00D0E562 /* ScoreBoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreBoardView.swift; sourceTree = "<group>"; };
+		17FEAF422FD0661300D0E562 /* ControlButtonsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlButtonsView.swift; sourceTree = "<group>"; };
+		17FEAF442FD0662100D0E562 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,6 +99,10 @@
 		17FEAF2A2FCE08AE00D0E562 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				17FEAF3E2FD0653100D0E562 /* CardView.swift */,
+				17FEAF402FD0660F00D0E562 /* ScoreBoardView.swift */,
+				17FEAF422FD0661300D0E562 /* ControlButtonsView.swift */,
+				17FEAF442FD0662100D0E562 /* GameView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -168,11 +180,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				17FEAF3F2FD0653100D0E562 /* CardView.swift in Sources */,
 				17FEAF3D2FD05ECD00D0E562 /* GameViewModel.swift in Sources */,
 				17FEAF352FD053F900D0E562 /* Suit.swift in Sources */,
 				17FEAF3B2FD053F900D0E562 /* RoundResult.swift in Sources */,
+				17FEAF452FD0662100D0E562 /* GameView.swift in Sources */,
+				17FEAF432FD0661300D0E562 /* ControlButtonsView.swift in Sources */,
 				17FEAF372FD053F900D0E562 /* Rank.swift in Sources */,
 				17FEAF212FCE08AE00D0E562 /* ICS3UCulminatingApp.swift in Sources */,
+				17FEAF412FD0660F00D0E562 /* ScoreBoardView.swift in Sources */,
 				17FEAF392FD053F900D0E562 /* Card.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
