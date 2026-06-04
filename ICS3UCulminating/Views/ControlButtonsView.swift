@@ -21,10 +21,11 @@ struct ControlButtonsView: View {
                         Label("Higher", systemImage: "arrow.up.circle.fill")
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(.green)
+                            .background(viewModel.isCPUThinking ? .gray : .green)
                             .foregroundStyle(.white)
                             .clipShape(RoundedRectangle(cornerRadius: 12))
                     }
+                    .disabled(viewModel.isCPUThinking)
                     
                     Button {
                         viewModel.playerGuess(isHigher: false)
@@ -32,10 +33,11 @@ struct ControlButtonsView: View {
                         Label("Lower", systemImage: "arrow.down.circle.fill")
                             .frame(maxWidth: .infinity)
                             .padding()
-                            .background(.red)
+                            .background(viewModel.isCPUThinking ? .gray : .red)
                             .foregroundStyle(.white)
                             .clipShape(RoundedRectangle(cornerRadius: 12))
                     }
+                    .disabled(viewModel.isCPUThinking)
                 }
                 .font(.headline)
             } else {
@@ -47,10 +49,11 @@ struct ControlButtonsView: View {
                         .font(.headline)
                         .frame(maxWidth: .infinity)
                         .padding()
-                        .background(.blue)
+                        .background(viewModel.isCPUThinking ? .gray : .blue)
                         .foregroundStyle(.white)
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
+                .disabled(viewModel.isCPUThinking)
             }
         }
     }

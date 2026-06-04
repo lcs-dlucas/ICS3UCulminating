@@ -7,6 +7,7 @@ struct GameView: View {
     // MARK: - Stored properties
     
     @State private var viewModel = GameViewModel()
+    @State private var showRules = false
     
     // MARK: - Body
     
@@ -21,9 +22,20 @@ struct GameView: View {
             VStack(spacing: 25) {
                 // 1. Header & Scoreboard
                 VStack(spacing: 8) {
-                    Text("Higher or Lower War")
-                        .font(.largeTitle)
-                        .bold()
+                    HStack {
+                        Spacer()
+                        Text("Higher or Lower War")
+                            .font(.largeTitle)
+                            .bold()
+                        Spacer()
+                        Button {
+                            showRules = true
+                        } label: {
+                            Image(systemName: "questionmark.circle.fill")
+                                .font(.title)
+                                .foregroundStyle(.blue)
+                        }
+                    }
                     
                     ScoreBoardView(viewModel: viewModel)
                 }
@@ -32,26 +44,27 @@ struct GameView: View {
                 Spacer()
                 
                 // 2. Play Area (Card Comparison)
-                HStack(spacing: 30) {
+                HStack(alignment: .bottom, spacing: 30) {
                     // Player Side
                     VStack {
-                        Text("You")
-                            .font(.subheadline)
+                        Text("You (\(viewModel.playerRoundScore))")
+                            .font(.headline)
                             .bold()
-                        CardView(card: viewModel.playerCurrentCard)
+                        HandView(cards: viewModel.playerHand)
                     }
                     
                     Text("VS")
                         .font(.title)
                         .italic()
                         .foregroundStyle(.secondary)
+                        .padding(.bottom, 60)
                     
                     // CPU Side
                     VStack {
-                        Text("CPU")
-                            .font(.subheadline)
+                        Text("CPU (\(viewModel.cpuRoundScore))")
+                            .font(.headline)
                             .bold()
-                        CardView(card: viewModel.cpuCurrentCard)
+                        HandView(cards: viewModel.cpuHand)
                     }
                 }
                 
@@ -72,6 +85,40 @@ struct GameView: View {
                 ControlButtonsView(viewModel: viewModel)
                     .padding(.horizontal)
                     .padding(.bottom, 20)
+            }
+        }
+        .sheet(isPresented: $showRules) {
+            RulesView()
+        }
+    }
+}
+
+// MARK: - RulesView
+struct RulesView: View {
+    @Environment(\.dismiss) var dismiss
+    
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 15) {
+                    Text("How to Play")
+                        .font(.title)
+                        .bold()
+                    
+                    Text("1. Each player starts with 26 cards.")
+                    Text("2. A baseline card is revealed for both players.")
+                    Text("3. On your turn, guess if the next card will be HIGHER or LOWER than the current one.")
+                    Text("4. Correct guesses add the card's value to your score. The new card becomes the baseline.")
+                    Text("5. A wrong guess ends your turn immediately.")
+                    Text("6. The CPU then takes its turn using the same rules.")
+                    Text("7. The highest total score wins ALL cards used in the round.")
+                    Text("8. If it's a TIE, cards go to the WAR PILE for the next winner!")
+                }
+                .padding()
+            }
+            .navigationTitle("Game Rules")
+            .toolbar {
+                Button("Done") { dismiss() }
             }
         }
     }

@@ -19,6 +19,7 @@
 		17FEAF412FD0660F00D0E562 /* ScoreBoardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17FEAF402FD0660F00D0E562 /* ScoreBoardView.swift */; };
 		17FEAF432FD0661300D0E562 /* ControlButtonsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17FEAF422FD0661300D0E562 /* ControlButtonsView.swift */; };
 		17FEAF452FD0662100D0E562 /* GameView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17FEAF442FD0662100D0E562 /* GameView.swift */; };
+		17FEAF472FD1D36300D0E562 /* HandView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 17FEAF462FD1D36300D0E562 /* HandView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,6 +36,7 @@
 		17FEAF402FD0660F00D0E562 /* ScoreBoardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScoreBoardView.swift; sourceTree = "<group>"; };
 		17FEAF422FD0661300D0E562 /* ControlButtonsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ControlButtonsView.swift; sourceTree = "<group>"; };
 		17FEAF442FD0662100D0E562 /* GameView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameView.swift; sourceTree = "<group>"; };
+		17FEAF462FD1D36300D0E562 /* HandView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HandView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -103,6 +105,7 @@
 				17FEAF402FD0660F00D0E562 /* ScoreBoardView.swift */,
 				17FEAF422FD0661300D0E562 /* ControlButtonsView.swift */,
 				17FEAF442FD0662100D0E562 /* GameView.swift */,
+				17FEAF462FD1D36300D0E562 /* HandView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -188,6 +191,7 @@
 				17FEAF432FD0661300D0E562 /* ControlButtonsView.swift in Sources */,
 				17FEAF372FD053F900D0E562 /* Rank.swift in Sources */,
 				17FEAF212FCE08AE00D0E562 /* ICS3UCulminatingApp.swift in Sources */,
+				17FEAF472FD1D36300D0E562 /* HandView.swift in Sources */,
 				17FEAF412FD0660F00D0E562 /* ScoreBoardView.swift in Sources */,
 				17FEAF392FD053F900D0E562 /* Card.swift in Sources */,
 			);

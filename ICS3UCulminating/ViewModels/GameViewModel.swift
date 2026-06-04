@@ -1,5 +1,6 @@
 import Foundation
 import Observation
+import SwiftUI
 
 // MARK: - GameViewModel
 /// Manages the state and logic for the Higher or Lower War game.
@@ -15,14 +16,24 @@ class GameViewModel {
     var warPile: [Card] = []
     
     // Round State
-    var playerCurrentCard: Card?
-    var cpuCurrentCard: Card?
+    var playerHand: [Card] = []
+    var cpuHand: [Card] = []
+    
+    var playerCurrentCard: Card? {
+        return playerHand.last
+    }
+    
+    var cpuCurrentCard: Card? {
+        return cpuHand.last
+    }
+    
     var playerRoundScore: Int = 0
     var cpuRoundScore: Int = 0
     var cardsUsedInRound: [Card] = []
     
     // Turn Management
     var isPlayerTurn: Bool = false
+    var isCPUThinking: Bool = false
     var isRoundOver: Bool = false
     var feedbackMessage: String = "Press 'Deal' to start!"
     
@@ -65,27 +76,31 @@ class GameViewModel {
             return
         }
         
-        // Reset round state
-        isRoundOver = false
-        cardsUsedInRound = []
-        
-        // 1. Reveal top cards as initial baseline
-        let pCard = playerDeck.removeFirst()
-        let cCard = cpuDeck.removeFirst()
-        
-        playerCurrentCard = pCard
-        cpuCurrentCard = cCard
-        
-        // 2. Set initial scores to the card's rank value
-        playerRoundScore = pCard.rank.rawValue
-        cpuRoundScore = cCard.rank.rawValue
-        
-        // 3. Add these to the list of cards used this round
-        cardsUsedInRound.append(pCard)
-        cardsUsedInRound.append(cCard)
-        
-        isPlayerTurn = true
-        feedbackMessage = "Your turn! Guess Higher or Lower."
+        withAnimation {
+            // Reset round state
+            isRoundOver = false
+            cardsUsedInRound = []
+            playerHand = []
+            cpuHand = []
+            
+            // 1. Reveal top cards as initial baseline
+            let pCard = playerDeck.removeFirst()
+            let cCard = cpuDeck.removeFirst()
+            
+            playerHand.append(pCard)
+            cpuHand.append(cCard)
+            
+            // 2. Set initial scores to the card's rank value
+            playerRoundScore = pCard.rank.rawValue
+            cpuRoundScore = cCard.rank.rawValue
+            
+            // 3. Add these to the list of cards used this round
+            cardsUsedInRound.append(pCard)
+            cardsUsedInRound.append(cCard)
+            
+            isPlayerTurn = true
+            feedbackMessage = "Your turn! Guess Higher or Lower."
+        }
     }
     
     /// Processes the player's guess.
@@ -104,19 +119,22 @@ class GameViewModel {
         let currentRank = playerCurrentCard?.rank.rawValue ?? 0
         let nextRank = nextCard.rank.rawValue
         
-        // Determine if guess is correct
-        let correctHigher = isHigher && nextRank > currentRank
-        let correctLower = !isHigher && nextRank < currentRank
-        
-        if correctHigher || correctLower {
-            // Correct guess: update score and baseline
-            playerRoundScore += nextRank
-            playerCurrentCard = nextCard
-            feedbackMessage = "Correct! Score: \(playerRoundScore). Continue?"
-        } else {
-            // Incorrect guess: update baseline and end turn
-            playerCurrentCard = nextCard
-            endPlayerTurn(message: "Wrong! Your turn ends. Score: \(playerRoundScore)")
+        withAnimation {
+            // Add to hand
+            playerHand.append(nextCard)
+            
+            // Determine if guess is correct
+            let correctHigher = isHigher && nextRank > currentRank
+            let correctLower = !isHigher && nextRank < currentRank
+            
+            if correctHigher || correctLower {
+                // Correct guess: update score
+                playerRoundScore += nextRank
+                feedbackMessage = "Correct! Score: \(playerRoundScore). Continue?"
+            } else {
+                // Incorrect guess: update baseline and end turn
+                endPlayerTurn(message: "Wrong! Your turn ends. Score: \(playerRoundScore)")
+            }
         }
     }
     
@@ -125,12 +143,16 @@ class GameViewModel {
         isPlayerTurn = false
         feedbackMessage = message
         
-        // Brief delay simulation would happen in View, here we just run logic
-        runCPUTurn()
+        // Run CPU turn asynchronously
+        Task {
+            await runCPUTurn()
+        }
     }
     
-    /// Simple rule-based strategy for the CPU.
-    func runCPUTurn() {
+    /// Asynchronous rule-based strategy for the CPU.
+    /// Includes a "Dumb Factor" with a shifting midline.
+    func runCPUTurn() async {
+        isCPUThinking = true
         var turnActive = true
         
         while turnActive {
@@ -140,13 +162,22 @@ class GameViewModel {
                 break
             }
             
+            // Add a visual delay (1 second)
+            try? await Task.sleep(nanoseconds: 1_000_000_000)
+            
             let currentRank = cpuCurrentCard?.rank.rawValue ?? 0
             
-            // Rule: If card is 8 or lower, guess Higher. Otherwise, guess Lower.
-            let guessHigher = currentRank <= 8
+            // "Dumb Factor": Shift the midline between 6 and 10 for every guess
+            let midline = Int.random(in: 6...10)
+            let guessHigher = currentRank <= midline
             
             let nextCard = cpuDeck.removeFirst()
             cardsUsedInRound.append(nextCard)
+            
+            withAnimation {
+                cpuHand.append(nextCard)
+            }
+            
             let nextRank = nextCard.rank.rawValue
             
             let correctHigher = guessHigher && nextRank > currentRank
@@ -154,34 +185,39 @@ class GameViewModel {
             
             if correctHigher || correctLower {
                 cpuRoundScore += nextRank
-                cpuCurrentCard = nextCard
+                feedbackMessage = "CPU guessed correctly!"
             } else {
-                cpuCurrentCard = nextCard
+                feedbackMessage = "CPU guessed wrong!"
                 turnActive = false
             }
         }
         
+        // Final delay before resolving
+        try? await Task.sleep(nanoseconds: 500_000_000)
+        isCPUThinking = false
         resolveRound()
     }
     
     /// Decides the winner of the round and distributes cards.
     func resolveRound() {
-        isRoundOver = true
-        
-        if playerRoundScore > cpuRoundScore {
-            // Player wins: takes all cards used + war pile
-            awardCards(to: .playerWin)
-            feedbackMessage = "You win the round! (\(playerRoundScore) vs \(cpuRoundScore))"
-        } else if cpuRoundScore > playerRoundScore {
-            // CPU wins: takes all cards used + war pile
-            awardCards(to: .cpuWin)
-            feedbackMessage = "CPU wins the round! (\(cpuRoundScore) vs \(playerRoundScore))"
-        } else {
-            // Tie: Add cards used to the war pile
-            for card in cardsUsedInRound {
-                warPile.append(card)
+        withAnimation {
+            isRoundOver = true
+            
+            if playerRoundScore > cpuRoundScore {
+                // Player wins: takes all cards used + war pile
+                awardCards(to: .playerWin)
+                feedbackMessage = "You win the round! (\(playerRoundScore) vs \(cpuRoundScore))"
+            } else if cpuRoundScore > playerRoundScore {
+                // CPU wins: takes all cards used + war pile
+                awardCards(to: .cpuWin)
+                feedbackMessage = "CPU wins the round! (\(cpuRoundScore) vs \(playerRoundScore))"
+            } else {
+                // Tie: Add cards used to the war pile
+                for card in cardsUsedInRound {
+                    warPile.append(card)
+                }
+                feedbackMessage = "It's a Tie! War Pile: \(warPile.count) cards."
             }
-            feedbackMessage = "It's a Tie! War Pile: \(warPile.count) cards."
         }
     }
     
