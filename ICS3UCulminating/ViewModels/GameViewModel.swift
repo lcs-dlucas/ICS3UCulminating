@@ -36,6 +36,7 @@ class GameViewModel {
     var isCPUThinking: Bool = false
     var isRoundOver: Bool = false
     var feedbackMessage: String = "Press 'Deal' to start!"
+    var gameWinner: String? = nil
     
     // MARK: - Initializer
     
@@ -54,8 +55,13 @@ class GameViewModel {
         playerDeck = []
         cpuDeck = []
         warPile = []
+        gameWinner = nil
+        playerHand = []
+        cpuHand = []
+        playerRoundScore = 0
+        cpuRoundScore = 0
         
-        // Split the deck equally (26 cards each) using a loop for clarity
+        // Split the deck equally
         for index in 0..<fullDeck.count {
             let card = fullDeck[index]
             if index % 2 == 0 {
@@ -218,6 +224,20 @@ class GameViewModel {
                 }
                 feedbackMessage = "It's a Tie! War Pile: \(warPile.count) cards."
             }
+            
+            // Check for game winner
+            checkGameEnd()
+        }
+    }
+    
+    /// Checks if a player has won the entire game.
+    private func checkGameEnd() {
+        if playerDeck.isEmpty && warPile.isEmpty {
+            gameWinner = "CPU"
+            feedbackMessage = "Game Over! CPU wins the war."
+        } else if cpuDeck.isEmpty && warPile.isEmpty {
+            gameWinner = "Player"
+            feedbackMessage = "Congratulations! You win the war."
         }
     }
     

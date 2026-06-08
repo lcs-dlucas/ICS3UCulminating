@@ -86,6 +86,47 @@ struct GameView: View {
                     .padding(.horizontal)
                     .padding(.bottom, 20)
             }
+            
+            // 5. Game Over Overlay
+            if let winner = viewModel.gameWinner {
+                ZStack {
+                    Color.black.opacity(0.8)
+                        .ignoresSafeArea()
+                    
+                    VStack(spacing: 20) {
+                        Text(winner == "Player" ? "🏆 YOU WIN! 🏆" : "💀 GAME OVER 💀")
+                            .font(.system(size: 40, weight: .black))
+                            .foregroundStyle(.white)
+                            .multilineTextAlignment(.center)
+                        
+                        Text(winner == "Player" ? "You have captured all 52 cards!" : "The CPU has captured your entire deck.")
+                            .font(.headline)
+                            .foregroundStyle(.white.opacity(0.8))
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal)
+                        
+                        Button {
+                            withAnimation {
+                                viewModel.setupGame()
+                            }
+                        } label: {
+                            Text("Play Again")
+                                .font(.headline)
+                                .padding()
+                                .frame(maxWidth: .infinity)
+                                .background(.blue)
+                                .foregroundStyle(.white)
+                                .clipShape(RoundedRectangle(cornerRadius: 15))
+                        }
+                        .padding(.horizontal, 40)
+                    }
+                    .padding()
+                    .background(.ultraThinMaterial)
+                    .clipShape(RoundedRectangle(cornerRadius: 25))
+                    .padding(30)
+                    .transition(.scale.combined(with: .opacity))
+                }
+            }
         }
         .sheet(isPresented: $showRules) {
             RulesView()
