@@ -10,51 +10,64 @@ class GameViewModel {
     
     // MARK: - Stored properties
     
-    // Decks
+    // Arrays representing the player's and CPU's current face-down decks.
     var playerDeck: [Card] = []
     var cpuDeck: [Card] = []
+    
+    // The "War Pile" stores cards from rounds that ended in a tie.
     var warPile: [Card] = []
     
-    // Round State
+    // Hands representing all cards drawn by each player in the current round.
     var playerHand: [Card] = []
     var cpuHand: [Card] = []
     
+    // Computed property to always get the most recently drawn card for the player.
     var playerCurrentCard: Card? {
         return playerHand.last
     }
     
+    // Computed property to always get the most recently drawn card for the CPU.
     var cpuCurrentCard: Card? {
         return cpuHand.last
     }
     
+    // Current round totals calculated by summing the ranks of all cards in the hand.
     var playerRoundScore: Int = 0
     var cpuRoundScore: Int = 0
+    
+    // Keeps track of every card used in the current round for distribution later.
     var cardsUsedInRound: [Card] = []
     
-    // Turn Management
-    var isPlayerTurn: Bool = false
-    var isCPUThinking: Bool = false
-    var isRoundOver: Bool = false
-    var feedbackMessage: String = "Press 'Deal' to start!"
+    // Turn Management properties to drive the UI state.
+    var isPlayerTurn: Bool = false      // True when the player is guessing.
+    var isCPUThinking: Bool = false    // True while the async CPU task is running.
+    var isRoundOver: Bool = false      // True after a winner is determined for the round.
+    var feedbackMessage: String = "Press 'Deal' to start!" // UI text for instructions.
+    
+    // The final winner of the entire 52-card game (nil if game is in progress).
     var gameWinner: String? = nil
     
-    // Persistence
+    // Persistence: The current lifetime statistics for the user.
     var stats: GameStats = StatsManager.shared.load()
     
     // MARK: - Initializer
     
     init() {
+        // Automatically start the setup when the ViewModel is created.
         setupGame()
     }
     
     // MARK: - Functions
     
-    /// Prepares the game by creating and splitting a shuffled deck.
+    /// Prepares a new 52-card game by resetting all states and splitting the deck.
     func setupGame() {
+        // Create a standard deck using the static factory method in Card.
         var fullDeck: [Card] = Card.createFullDeck()
-        fullDeck.shuffle() // Standard Swift shuffle is acceptable as it's not a higher-order transformation
         
-        // Reset properties
+        // Shuffle the deck using Swift's built-in algorithm.
+        fullDeck.shuffle() 
+        
+        // Reset all game state properties for a fresh start.
         playerDeck = []
         cpuDeck = []
         warPile = []
@@ -64,7 +77,7 @@ class GameViewModel {
         playerRoundScore = 0
         cpuRoundScore = 0
         
-        // Split the deck equally
+        // Split the deck equally: Every other card goes to the player/CPU.
         for index in 0..<fullDeck.count {
             let card = fullDeck[index]
             if index % 2 == 0 {
@@ -77,116 +90,121 @@ class GameViewModel {
         feedbackMessage = "Decks split. Good luck!"
     }
     
-    /// Starts a new round by revealing the initial baseline cards.
+    /// Starts a new round by drawing the initial baseline cards for both players.
     func startRound() {
-        // Guard against empty decks
+        // Ensure both players still have cards; otherwise, the game is over.
         guard playerDeck.count > 0, cpuDeck.count > 0 else {
             feedbackMessage = "Game Over! One player is out of cards."
             return
         }
         
+        // withAnimation ensures the UI updates (like cards appearing) are smooth.
         withAnimation {
-            // Reset round state
             isRoundOver = false
             cardsUsedInRound = []
             playerHand = []
             cpuHand = []
             
-            // 1. Reveal top cards as initial baseline
+            // Remove the top card from each deck.
             let pCard = playerDeck.removeFirst()
             let cCard = cpuDeck.removeFirst()
             
+            // Add them to the visible hand.
             playerHand.append(pCard)
             cpuHand.append(cCard)
             
-            // 2. Set initial scores to the card's rank value
+            // The initial score is just the rank of the first card.
             playerRoundScore = pCard.rank.rawValue
             cpuRoundScore = cCard.rank.rawValue
             
-            // 3. Add these to the list of cards used this round
+            // Track that these cards were used so they can be won.
             cardsUsedInRound.append(pCard)
             cardsUsedInRound.append(cCard)
             
+            // Give control to the player.
             isPlayerTurn = true
             feedbackMessage = "Your turn! Guess Higher or Lower."
         }
     }
     
-    /// Processes the player's guess.
+    /// Logic for processing a player's Higher or Lower guess.
     func playerGuess(isHigher: Bool) {
+        // Safety check to ensure it's actually the player's turn.
         guard isPlayerTurn else { return }
         
-        // Ensure player has a card to guess on
+        // If the player deck is empty, they can't draw another card; turn ends.
         if playerDeck.isEmpty {
             endPlayerTurn(message: "Out of cards! Turn ends.")
             return
         }
         
+        // Draw the next card.
         let nextCard = playerDeck.removeFirst()
         cardsUsedInRound.append(nextCard)
         
+        // Compare the new card's rank to the previous baseline card.
         let currentRank = playerCurrentCard?.rank.rawValue ?? 0
         let nextRank = nextCard.rank.rawValue
         
         withAnimation {
-            // Add to hand
+            // Add the new card to the visible hand stack.
             playerHand.append(nextCard)
             
-            // Record guess for stats
+            // Track stats: increment total guesses.
             stats.totalGuesses += 1
             
-            // Determine if guess is correct
+            // Determine if the guess "Higher" or "Lower" was correct.
             let correctHigher = isHigher && nextRank > currentRank
             let correctLower = !isHigher && nextRank < currentRank
             
             if correctHigher || correctLower {
-                // Correct guess: update score
+                // SUCCESS: Add points and increment correct guesses.
                 playerRoundScore += nextRank
                 stats.correctGuesses += 1
                 feedbackMessage = "Correct! Score: \(playerRoundScore). Continue?"
             } else {
-                // Incorrect guess: update baseline and end turn
+                // FAILURE: Turn ends immediately.
                 endPlayerTurn(message: "Wrong! Your turn ends. Score: \(playerRoundScore)")
             }
             
-            // Save stats after every guess to ensure persistence
+            // Persist the updated stats to the JSON file.
             StatsManager.shared.save(stats: stats)
         }
     }
     
-    /// Ends the player's turn and triggers the CPU logic.
+    /// Internal helper to transition from the Player's turn to the CPU's turn.
     private func endPlayerTurn(message: String) {
         isPlayerTurn = false
         feedbackMessage = message
         
-        // Run CPU turn asynchronously
+        // We use Task {} to run the CPU's asynchronous turn without blocking the main UI thread.
         Task {
             await runCPUTurn()
         }
     }
     
-    /// Asynchronous rule-based strategy for the CPU.
-    /// Includes a "Dumb Factor" with a shifting midline.
+    /// Asynchronous logic for the CPU's turn, allowing for delays between guesses.
     func runCPUTurn() async {
         isCPUThinking = true
         var turnActive = true
         
         while turnActive {
-            // CPU stops if it runs out of cards
+            // CPU stops if it runs out of cards.
             if cpuDeck.isEmpty {
                 turnActive = false
                 break
             }
             
-            // Add a visual delay (1 second)
+            // Introduce a 1-second delay so the player can see each card being flipped.
             try? await Task.sleep(nanoseconds: 1_000_000_000)
             
             let currentRank = cpuCurrentCard?.rank.rawValue ?? 0
             
-            // "Dumb Factor": Shift the midline between 6 and 10 for every guess
+            // THE "DUMB FACTOR": Instead of perfect math, the CPU picks a random midline (6-10).
             let midline = Int.random(in: 6...10)
             let guessHigher = currentRank <= midline
             
+            // Draw the CPU's next card.
             let nextCard = cpuDeck.removeFirst()
             cardsUsedInRound.append(nextCard)
             
@@ -196,6 +214,7 @@ class GameViewModel {
             
             let nextRank = nextCard.rank.rawValue
             
+            // Determine if the CPU's automated guess was correct.
             let correctHigher = guessHigher && nextRank > currentRank
             let correctLower = !guessHigher && nextRank < currentRank
             
@@ -203,45 +222,47 @@ class GameViewModel {
                 cpuRoundScore += nextRank
                 feedbackMessage = "CPU guessed correctly!"
             } else {
+                // CPU fails: turn ends.
                 feedbackMessage = "CPU guessed wrong!"
                 turnActive = false
             }
         }
         
-        // Final delay before resolving
+        // Brief pause before calculating the final winner of the round.
         try? await Task.sleep(nanoseconds: 500_000_000)
         isCPUThinking = false
         resolveRound()
     }
     
-    /// Decides the winner of the round and distributes cards.
+    /// Final step of a round: compares scores and awards cards to the winner.
     func resolveRound() {
         withAnimation {
             isRoundOver = true
             
             if playerRoundScore > cpuRoundScore {
-                // Player wins: takes all cards used + war pile
+                // PLAYER WINS: Award cards and update feedback.
                 awardCards(to: .playerWin)
                 feedbackMessage = "You win the round! (\(playerRoundScore) vs \(cpuRoundScore))"
             } else if cpuRoundScore > playerRoundScore {
-                // CPU wins: takes all cards used + war pile
+                // CPU WINS: Award cards and update feedback.
                 awardCards(to: .cpuWin)
                 feedbackMessage = "CPU wins the round! (\(cpuRoundScore) vs \(playerRoundScore))"
             } else {
-                // Tie: Add cards used to the war pile
+                // TIE: Cards move to the war pile for the next round's winner.
                 for card in cardsUsedInRound {
                     warPile.append(card)
                 }
                 feedbackMessage = "It's a Tie! War Pile: \(warPile.count) cards."
             }
             
-            // Check for game winner
+            // Check if this round resulted in someone winning the entire game.
             checkGameEnd()
         }
     }
     
-    /// Checks if a player has won the entire game.
+    /// Checks if a player has successfully captured all cards in the game.
     private func checkGameEnd() {
+        // If a player has no cards left and the war pile is empty, they have lost.
         if playerDeck.isEmpty && warPile.isEmpty {
             gameWinner = "CPU"
             stats.gamesLost += 1
@@ -255,22 +276,22 @@ class GameViewModel {
         }
     }
     
-    /// Helper to distribute cards at the end of a round.
+    /// Helper function to transfer cards from the middle of the table to a player's deck.
     private func awardCards(to winner: RoundResult) {
         var winnings: [Card] = []
         
-        // Combine current cards and war pile
+        // Collect all cards used in this round and any cards previously in the war pile.
         for card in cardsUsedInRound { winnings.append(card) }
         for card in warPile { winnings.append(card) }
         
-        // Add to winner's deck
+        // Append these cards to the bottom of the winner's deck.
         if winner == .playerWin {
             for card in winnings { playerDeck.append(card) }
         } else if winner == .cpuWin {
             for card in winnings { cpuDeck.append(card) }
         }
         
-        // Clear temporary piles
+        // Reset the piles for the next round.
         warPile = []
         cardsUsedInRound = []
     }

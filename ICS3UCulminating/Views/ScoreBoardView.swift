@@ -1,18 +1,19 @@
 import SwiftUI
 
 // MARK: - ScoreBoardView
-/// Displays the current state of the game: deck counts and round scores.
+/// A dashboard component that displays deck counts and round scores.
 struct ScoreBoardView: View {
     
     // MARK: - Stored properties
     
+    // References the ViewModel to observe changes in deck counts and scores.
     let viewModel: GameViewModel
     
     // MARK: - Body
     
     var body: some View {
         HStack {
-            // Player Stats
+            // COLUMN 1: Player's overall deck count and current round score.
             VStack(alignment: .leading) {
                 Text("Player")
                     .font(.caption)
@@ -27,7 +28,7 @@ struct ScoreBoardView: View {
             
             Spacer()
             
-            // War Pile Info
+            // COLUMN 2: The War Pile (only visible when there are cards in limbo).
             if viewModel.warPile.count > 0 {
                 VStack {
                     Text("War Pile")
@@ -44,7 +45,7 @@ struct ScoreBoardView: View {
             
             Spacer()
             
-            // CPU Stats
+            // COLUMN 3: CPU's overall deck count and current round score.
             VStack(alignment: .trailing) {
                 Text("CPU")
                     .font(.caption)
@@ -58,13 +59,9 @@ struct ScoreBoardView: View {
             }
         }
         .padding()
+        // Use ultraThinMaterial for a modern "glassmorphism" look.
         .background(.ultraThinMaterial)
         .clipShape(RoundedRectangle(cornerRadius: 15))
         .shadow(radius: 2)
     }
-}
-
-#Preview {
-    ScoreBoardView(viewModel: GameViewModel())
-        .padding()
 }

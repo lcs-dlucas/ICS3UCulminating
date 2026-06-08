@@ -1,15 +1,16 @@
 import Foundation
 
 // MARK: - RoundResult
-/// Tracks the outcome of a single round of Higher or Lower War.
+/// An enumeration used to signify the outcome of a single round.
+/// This acts as a clear signal between the logic layer and the visual layer.
 enum RoundResult {
-    case playerWin
-    case cpuWin
-    case tie
+    case playerWin // Player had a higher round score.
+    case cpuWin    // CPU had a higher round score.
+    case tie       // Both players had identical scores (triggers War Pile).
     
     // MARK: - Computed properties
     
-    /// Returns a message for display in the UI.
+    /// Returns a localized victory/defeat message for display in the feedback area.
     var message: String {
         switch self {
         case .playerWin: return "Player wins the round!"

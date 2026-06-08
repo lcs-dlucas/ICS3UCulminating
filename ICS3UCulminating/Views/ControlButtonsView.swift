@@ -1,33 +1,38 @@
 import SwiftUI
 
 // MARK: - ControlButtonsView
-/// Contains the buttons for user interaction: guessing and starting rounds.
+/// Manages the primary interaction buttons based on the game's current state.
 struct ControlButtonsView: View {
     
     // MARK: - Stored properties
     
     let viewModel: GameViewModel
+    
+    // Closure to trigger showing the stats sheet in the parent view.
     var onShowStats: (() -> Void)? = nil
     
     // MARK: - Body
     
     var body: some View {
         VStack(spacing: 16) {
+            // STATE 1: Player is currently making a move.
             if viewModel.isPlayerTurn {
-                // Higher / Lower Buttons
                 HStack(spacing: 20) {
+                    // GUESS HIGHER Button
                     Button {
                         viewModel.playerGuess(isHigher: true)
                     } label: {
                         Label("Higher", systemImage: "arrow.up.circle.fill")
                             .frame(maxWidth: .infinity)
                             .padding()
+                            // Change color to gray if the CPU is thinking to show it's disabled.
                             .background(viewModel.isCPUThinking ? .gray : .green)
                             .foregroundStyle(.white)
                             .clipShape(RoundedRectangle(cornerRadius: 12))
                     }
                     .disabled(viewModel.isCPUThinking)
                     
+                    // GUESS LOWER Button
                     Button {
                         viewModel.playerGuess(isHigher: false)
                     } label: {
@@ -41,9 +46,11 @@ struct ControlButtonsView: View {
                     .disabled(viewModel.isCPUThinking)
                 }
                 .font(.headline)
-            } else {
-                // Deal / Next Round Button
+            } 
+            // STATE 2: Waiting to start a new round or game.
+            else {
                 HStack(spacing: 12) {
+                    // ACTION Button (Deal / Next Round)
                     Button {
                         viewModel.startRound()
                     } label: {
@@ -57,7 +64,7 @@ struct ControlButtonsView: View {
                     }
                     .disabled(viewModel.isCPUThinking)
                     
-                    // History Button
+                    // HISTORY Button (Opens stats)
                     Button {
                         onShowStats?()
                     } label: {
@@ -73,11 +80,4 @@ struct ControlButtonsView: View {
             }
         }
     }
-}
-
-#Preview {
-    VStack {
-        ControlButtonsView(viewModel: GameViewModel())
-    }
-    .padding()
 }

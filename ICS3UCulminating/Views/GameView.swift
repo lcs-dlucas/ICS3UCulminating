@@ -1,12 +1,15 @@
 import SwiftUI
 
 // MARK: - GameView
-/// The main view container for the "Higher or Lower War" game.
+/// The orchestrator of the entire UI, assembling subviews into a cohesive game screen.
 struct GameView: View {
     
     // MARK: - Stored properties
     
+    // Initializes the ViewModel which persists for the life of the view.
     @State private var viewModel = GameViewModel()
+    
+    // Local state to control when the Rules and Stats sheets appear.
     @State private var showRules = false
     @State private var showStats = false
     
@@ -14,14 +17,15 @@ struct GameView: View {
     
     var body: some View {
         ZStack {
-            // Background Gradient
+            // LAYER 1: A subtle purple/blue gradient for the background.
             LinearGradient(colors: [.blue.opacity(0.1), .purple.opacity(0.1)],
                            startPoint: .topLeading,
                            endPoint: .bottomTrailing)
                 .ignoresSafeArea()
             
+            // LAYER 2: The primary layout stack.
             VStack(spacing: 25) {
-                // 1. Header & Scoreboard
+                // 1. Header with Title and Help Button.
                 VStack(spacing: 8) {
                     HStack {
                         Spacer()
@@ -29,6 +33,7 @@ struct GameView: View {
                             .font(.largeTitle)
                             .bold()
                         Spacer()
+                        // Rules toggle button.
                         Button {
                             showRules = true
                         } label: {
@@ -38,15 +43,16 @@ struct GameView: View {
                         }
                     }
                     
+                    // Display the dashboard panel.
                     ScoreBoardView(viewModel: viewModel)
                 }
                 .padding(.horizontal)
                 
                 Spacer()
                 
-                // 2. Play Area (Card Comparison)
+                // 2. Play Area: Visual card comparison.
                 HStack(alignment: .bottom, spacing: 30) {
-                    // Player Side
+                    // Player's Side with active score label.
                     VStack {
                         Text("You (\(viewModel.playerRoundScore))")
                             .font(.headline)
@@ -54,13 +60,14 @@ struct GameView: View {
                         HandView(cards: viewModel.playerHand)
                     }
                     
+                    // Divider text.
                     Text("VS")
                         .font(.title)
                         .italic()
                         .foregroundStyle(.secondary)
                         .padding(.bottom, 60)
                     
-                    // CPU Side
+                    // CPU's Side with active score label.
                     VStack {
                         Text("CPU (\(viewModel.cpuRoundScore))")
                             .font(.headline)
@@ -69,7 +76,7 @@ struct GameView: View {
                     }
                 }
                 
-                // 3. Feedback Message
+                // 3. Dynamic Feedback Message (Instructions or Results).
                 Text(viewModel.feedbackMessage)
                     .font(.body)
                     .multilineTextAlignment(.center)
@@ -78,11 +85,12 @@ struct GameView: View {
                     .background(.white.opacity(0.8))
                     .clipShape(RoundedRectangle(cornerRadius: 10))
                     .padding(.horizontal)
+                    // Animation ensures text changes are smooth.
                     .animation(.default, value: viewModel.feedbackMessage)
                 
                 Spacer()
                 
-                // 4. Interaction Controls
+                // 4. Button Controls: Logic passed in for the Stats button.
                 ControlButtonsView(viewModel: viewModel) {
                     showStats = true
                 }
@@ -90,13 +98,15 @@ struct GameView: View {
                 .padding(.bottom, 20)
             }
             
-            // 5. Game Over Overlay
+            // LAYER 3: Win/Loss Overlay (appears only when gameWinner is set).
             if let winner = viewModel.gameWinner {
                 ZStack {
+                    // Dim the background.
                     Color.black.opacity(0.8)
                         .ignoresSafeArea()
                     
                     VStack(spacing: 20) {
+                        // Success/Failure headline.
                         Text(winner == "Player" ? "🏆 YOU WIN! 🏆" : "💀 GAME OVER 💀")
                             .font(.system(size: 40, weight: .black))
                             .foregroundStyle(.white)
@@ -108,6 +118,7 @@ struct GameView: View {
                             .multilineTextAlignment(.center)
                             .padding(.horizontal)
                         
+                        // Restart button.
                         Button {
                             withAnimation {
                                 viewModel.setupGame()
@@ -131,9 +142,11 @@ struct GameView: View {
                 }
             }
         }
+        // Sheet for Rules.
         .sheet(isPresented: $showRules) {
             RulesView()
         }
+        // Sheet for Lifetime History.
         .sheet(isPresented: $showStats) {
             StatsView(stats: viewModel.stats)
         }
@@ -141,6 +154,7 @@ struct GameView: View {
 }
 
 // MARK: - RulesView
+/// A simple instructional overlay explaining the game mechanics.
 struct RulesView: View {
     @Environment(\.dismiss) var dismiss
     
@@ -169,8 +183,4 @@ struct RulesView: View {
             }
         }
     }
-}
-
-#Preview {
-    GameView()
 }
