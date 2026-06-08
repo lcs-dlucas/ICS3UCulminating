@@ -7,6 +7,7 @@ struct ControlButtonsView: View {
     // MARK: - Stored properties
     
     let viewModel: GameViewModel
+    var onShowStats: (() -> Void)? = nil
     
     // MARK: - Body
     
@@ -42,18 +43,33 @@ struct ControlButtonsView: View {
                 .font(.headline)
             } else {
                 // Deal / Next Round Button
-                Button {
-                    viewModel.startRound()
-                } label: {
-                    Text(viewModel.isRoundOver ? "Start Next Round" : "Deal Cards")
-                        .font(.headline)
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(viewModel.isCPUThinking ? .gray : .blue)
-                        .foregroundStyle(.white)
-                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                HStack(spacing: 12) {
+                    Button {
+                        viewModel.startRound()
+                    } label: {
+                        Text(viewModel.isRoundOver ? "Start Next Round" : "Deal Cards")
+                            .font(.headline)
+                            .frame(maxWidth: .infinity)
+                            .padding()
+                            .background(viewModel.isCPUThinking ? .gray : .blue)
+                            .foregroundStyle(.white)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                    }
+                    .disabled(viewModel.isCPUThinking)
+                    
+                    // History Button
+                    Button {
+                        onShowStats?()
+                    } label: {
+                        Image(systemName: "list.bullet.rectangle.portrait.fill")
+                            .font(.title2)
+                            .padding()
+                            .background(viewModel.isCPUThinking ? .gray : .orange)
+                            .foregroundStyle(.white)
+                            .clipShape(RoundedRectangle(cornerRadius: 12))
+                    }
+                    .disabled(viewModel.isCPUThinking)
                 }
-                .disabled(viewModel.isCPUThinking)
             }
         }
     }

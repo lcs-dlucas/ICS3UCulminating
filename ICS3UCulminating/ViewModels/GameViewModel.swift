@@ -38,6 +38,9 @@ class GameViewModel {
     var feedbackMessage: String = "Press 'Deal' to start!"
     var gameWinner: String? = nil
     
+    // Persistence
+    var stats: GameStats = StatsManager.shared.load()
+    
     // MARK: - Initializer
     
     init() {
@@ -129,6 +132,9 @@ class GameViewModel {
             // Add to hand
             playerHand.append(nextCard)
             
+            // Record guess for stats
+            stats.totalGuesses += 1
+            
             // Determine if guess is correct
             let correctHigher = isHigher && nextRank > currentRank
             let correctLower = !isHigher && nextRank < currentRank
@@ -136,11 +142,15 @@ class GameViewModel {
             if correctHigher || correctLower {
                 // Correct guess: update score
                 playerRoundScore += nextRank
+                stats.correctGuesses += 1
                 feedbackMessage = "Correct! Score: \(playerRoundScore). Continue?"
             } else {
                 // Incorrect guess: update baseline and end turn
                 endPlayerTurn(message: "Wrong! Your turn ends. Score: \(playerRoundScore)")
             }
+            
+            // Save stats after every guess to ensure persistence
+            StatsManager.shared.save(stats: stats)
         }
     }
     
@@ -234,10 +244,14 @@ class GameViewModel {
     private func checkGameEnd() {
         if playerDeck.isEmpty && warPile.isEmpty {
             gameWinner = "CPU"
+            stats.gamesLost += 1
             feedbackMessage = "Game Over! CPU wins the war."
+            StatsManager.shared.save(stats: stats)
         } else if cpuDeck.isEmpty && warPile.isEmpty {
             gameWinner = "Player"
+            stats.gamesWon += 1
             feedbackMessage = "Congratulations! You win the war."
+            StatsManager.shared.save(stats: stats)
         }
     }
     

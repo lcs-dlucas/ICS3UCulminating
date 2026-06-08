@@ -8,6 +8,7 @@ struct GameView: View {
     
     @State private var viewModel = GameViewModel()
     @State private var showRules = false
+    @State private var showStats = false
     
     // MARK: - Body
     
@@ -82,9 +83,11 @@ struct GameView: View {
                 Spacer()
                 
                 // 4. Interaction Controls
-                ControlButtonsView(viewModel: viewModel)
-                    .padding(.horizontal)
-                    .padding(.bottom, 20)
+                ControlButtonsView(viewModel: viewModel) {
+                    showStats = true
+                }
+                .padding(.horizontal)
+                .padding(.bottom, 20)
             }
             
             // 5. Game Over Overlay
@@ -130,6 +133,9 @@ struct GameView: View {
         }
         .sheet(isPresented: $showRules) {
             RulesView()
+        }
+        .sheet(isPresented: $showStats) {
+            StatsView(stats: viewModel.stats)
         }
     }
 }
